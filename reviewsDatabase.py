@@ -1,3 +1,5 @@
+from typing import Tuple
+
 import pandas as pd
 from datetime import datetime
 
@@ -23,3 +25,15 @@ class ReviewsDatabase:
     def append(self, data: pd.DataFrame):
         self.date = datetime.now()
         self.df = pd.concat([self.df, data], ignore_index=True, )
+
+    def get_all_reviews(self) -> str:
+        return "\n".join(self.df["review_text"])
+
+    def get_filtered_reviews(self, selected_rates: Tuple) -> str:
+        return "\n".join(self.df[self.df['rating'].isin(selected_rates)]["review_text"])
+
+    @staticmethod
+    def from_csv(path: str) -> "ReviewsDatabase":
+        df = pd.read_csv(path)
+        name = path.split("/")[-1]
+        return ReviewsDatabase(df, name)
